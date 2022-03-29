@@ -5,7 +5,7 @@ pragma solidity >=0.8.0 <0.9.0;
 import "../interfaces/IERC20.sol";
 
 /**
- * @title A simple ERC20 token
+ * @title Simple ERC20 token
  *
  * @dev in accordance with https://eips.ethereum.org/EIPS/eip-20
  * SafeMath isn't used due to the compiler version
@@ -24,15 +24,13 @@ contract ERC20 is IERC20 {
         string memory tokenName, 
         string memory tokenSymbol, 
         uint8 tokenDecimals,
-        uint256 tokenInicialSupply
+        uint256 tokenTotalSupply
     ) 
     {
         _name = tokenName;
         _symbol = tokenSymbol;
         _decimals = tokenDecimals;
-        _totalSupply = tokenInicialSupply;
-
-        balances[msg.sender] = _totalSupply;
+        _totalSupply = tokenTotalSupply;        
     } 
 
     /**
@@ -70,6 +68,9 @@ contract ERC20 is IERC20 {
         return balances[_owner];
     }
 
+    /**
+     * @dev transfers token to a given address
+     */
     function transfer(
         address _to, 
         uint256 _value
@@ -86,6 +87,10 @@ contract ERC20 is IERC20 {
         return true;
     }
 
+    /**
+     * @dev transfers token to a given address 
+     * from a behalf of another given address
+     */
     function transferFrom(
         address _from, 
         address _to, 
@@ -105,6 +110,10 @@ contract ERC20 is IERC20 {
         return true;
     }
 
+    /**
+     * @dev approves the given address to transfer given ammount of the tokens 
+     * from a behalf of sender's address
+     */
     function approve(
         address _spender, 
         uint256 _value
@@ -118,6 +127,10 @@ contract ERC20 is IERC20 {
         return true;
     }
 
+    /**
+     * @return remaining amount of the tokens that the given address
+     * is allowed to transfer from a behalf of a sender
+     */
     function allowance(
         address _owner, 
         address _spender
@@ -126,6 +139,20 @@ contract ERC20 is IERC20 {
         returns (uint256 remaining)
     {
         return allowed[_owner][_spender];
+    }
+
+    /**
+     * @dev mints new tokens to a given address
+     * and fires a Transfer from the token contract event
+     */
+    function _mint(
+        address _to,
+        uint256 _value
+    )
+        internal
+    {
+        balances[_to] = balances[_to] + _value;
+        emit Transfer(address(this), _to, _value);
     }
 }
 
